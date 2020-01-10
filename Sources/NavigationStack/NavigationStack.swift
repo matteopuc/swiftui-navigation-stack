@@ -6,7 +6,7 @@
 import SwiftUI
 
 /// The transition type for the whole NavigationStackView
-enum NavigationTransition {
+public enum NavigationTransition {
     case none
     case `default`
     case custom(AnyTransition)
@@ -27,20 +27,15 @@ private enum NavigationType {
     case pop
 }
 
-enum PopDestination {
+public enum PopDestination {
     case previous
     case root
     case view(withId: String)
 }
 
-enum NavigationStackError: Error {
-    case duplicatedViewId
-    case viewNotFound
-}
-
 // MARK: ViewModel
 
-class NavigationStack: ObservableObject {
+public class NavigationStack: ObservableObject {
     fileprivate private(set) var navigationType = NavigationType.push
     private var viewStack = ViewStack() {
         didSet {
@@ -50,7 +45,7 @@ class NavigationStack: ObservableObject {
 
     @Published fileprivate var currentView: ViewElement?
 
-    func push<Element: View>(_ element: Element, withId identifier: String? = nil) {
+    public func push<Element: View>(_ element: Element, withId identifier: String? = nil) {
         withAnimation(NavigationTransition.defaultEasing) {
             navigationType = .push
             viewStack.push(ViewElement(id: identifier == nil ? UUID().uuidString : identifier!,
@@ -58,7 +53,7 @@ class NavigationStack: ObservableObject {
         }
     }
 
-    func pop(to: PopDestination = .previous) {
+    public func pop(to: PopDestination = .previous) {
         withAnimation(NavigationTransition.defaultEasing) {
             navigationType = .pop
             switch to {
@@ -122,13 +117,13 @@ private struct ViewElement: Identifiable, Equatable {
 
 // MARK: Views
 
-struct NavigationStackView<Root>: View where Root: View {
+public struct NavigationStackView<Root>: View where Root: View {
     @ObservedObject private var navViewModel = NavigationStack()
     private let rootViewID = "root"
     private let rootView: Root
     private let transitions: (push: AnyTransition, pop: AnyTransition)
 
-    init(transitionType: NavigationTransition = .default, @ViewBuilder rootView: () -> Root) {
+    public init(transitionType: NavigationTransition = .default, @ViewBuilder rootView: () -> Root) {
         self.rootView = rootView()
         switch transitionType {
         case .none:
@@ -140,7 +135,7 @@ struct NavigationStackView<Root>: View where Root: View {
         }
     }
 
-    var body: some View {
+    public var body: some View {
         let showRoot = navViewModel.currentView == nil
         let navigationType = navViewModel.navigationType
 
@@ -162,16 +157,16 @@ struct NavigationStackView<Root>: View where Root: View {
     }
 }
 
-struct PushView<Label, Destination, Tag>: View where Label: View, Destination: View, Tag: Hashable {
+public struct PushView<Label, Destination, Tag>: View where Label: View, Destination: View, Tag: Hashable {
     @EnvironmentObject private var navViewModel: NavigationStack
     private let label: Label?
     private let destinationId: String?
     private let destination: Destination
     private let tag: Tag?
-    @Binding var isActive: Bool
-    @Binding var selection: Tag?
+    @Binding private var isActive: Bool
+    @Binding private var selection: Tag?
 
-    init(destination: Destination, destinationId: String? = nil, tag: Tag, selection: Binding<Tag?>,
+    public init(destination: Destination, destinationId: String? = nil, tag: Tag, selection: Binding<Tag?>,
          @ViewBuilder label: () -> Label) {
         self.init(destination: destination, destinationId: destinationId, isActive: Binding.constant(false),
                   tag: tag, selection: selection, label: label)
@@ -187,7 +182,7 @@ struct PushView<Label, Destination, Tag>: View where Label: View, Destination: V
         self._selection = selection
     }
 
-    var body: some View {
+    public var body: some View {
         if let selection = selection, let tag = tag, selection == tag {
             DispatchQueue.main.async {
                 self.selection = nil
@@ -210,7 +205,7 @@ struct PushView<Label, Destination, Tag>: View where Label: View, Destination: V
     }
 }
 
-extension PushView where Tag == Never {
+public extension PushView where Tag == Never {
     init(destination: Destination, destinationId: String? = nil, @ViewBuilder label: () -> Label) {
         self.init(destination: destination, destinationId: destinationId, isActive: Binding.constant(false),
                   tag: nil, selection: Binding.constant(nil), label: label)
@@ -223,15 +218,15 @@ extension PushView where Tag == Never {
     }
 }
 
-struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
+public struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
     @EnvironmentObject private var navViewModel: NavigationStack
     private let label: Label
     private let destination: PopDestination
     private let tag: Tag?
-    @Binding var isActive: Bool
-    @Binding var selection: Tag?
+    @Binding private var isActive: Bool
+    @Binding private var selection: Tag?
 
-    init(destination: PopDestination = .previous, tag: Tag, selection: Binding<Tag?>, @ViewBuilder label: () -> Label) {
+    public init(destination: PopDestination = .previous, tag: Tag, selection: Binding<Tag?>, @ViewBuilder label: () -> Label) {
         self.init(destination: destination, isActive: Binding.constant(false),
                   tag: tag, selection: selection, label: label)
     }
@@ -245,7 +240,7 @@ struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
         self.tag = tag
     }
 
-    var body: some View {
+    public var body: some View {
         if let selection = selection, let tag = tag, selection == tag {
             DispatchQueue.main.async {
                 self.selection = nil
@@ -268,7 +263,7 @@ struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
     }
 }
 
-extension PopView where Tag == Never {
+public extension PopView where Tag == Never {
     init(destination: PopDestination = .previous, @ViewBuilder label: () -> Label) {
         self.init(destination: destination, isActive: Binding.constant(false),
                   tag: nil, selection: Binding.constant(nil), label: label)
