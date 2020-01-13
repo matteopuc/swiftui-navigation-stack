@@ -5,7 +5,7 @@ An alternative SwiftUI NavigationView implementing classic stack-based navigatio
 
 ## Installation
 
-[SwiftPackageManager](https://swift.org/package-manager/): open xCode, click on `File -> Swift Packages -> Add Package dependency...` and use the repository URL (https://github.com/biobeats/swiftui-navigation-stack.git) to download the package.
+Through [SwiftPackageManager](https://swift.org/package-manager/): open xCode, click on `File -> Swift Packages -> Add Package dependency...` and use the repository URL (https://github.com/biobeats/swiftui-navigation-stack.git) to download the package.
 
 ## Usage
 
