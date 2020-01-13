@@ -1,5 +1,5 @@
 # swiftui-navigation-stack
-An alternative SwiftUI NavigationView implementing classic stack-based navigation giving also some more control on animations.
+An alternative SwiftUI NavigationView implementing classic stack-based navigation giving also some more control on animations and programmatic navigation.
 
 # NavigationStackView
 
