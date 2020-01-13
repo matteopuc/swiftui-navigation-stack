@@ -3,6 +3,12 @@ An alternative SwiftUI NavigationView implementing classic stack-based navigatio
 
 # NavigationStackView
 
+## Installation
+
+[SwiftPackageManager](https://swift.org/package-manager/): open xCode, click on `File -> Swift Packages -> Add Package dependency...` and use the repository URL (https://github.com/biobeats/swiftui-navigation-stack.git) to download the package.
+
+## Usage
+
 In SwiftUI we have a couple of views to manage the navigation: `NavigationView` and `NavigationLink`. At the moment these views have some limitations:
 
 - we can't turn off the transition animations;
