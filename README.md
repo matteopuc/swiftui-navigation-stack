@@ -7,7 +7,7 @@ In SwiftUI we have a couple of views to manage the navigation: `NavigationView` 
 
 - we can't turn off the transition animations;
 - we can't customise the transition animations;
-- we can't pop either to root (i.e. the first app view), or to a specific view;
+- we can't navigate back either to root (i.e. the first app view), or to a specific view;
 - we can't push programmatically without using a view;
 
 `NavigationStackView` is a view that mimics all the behaviours belonging to the standard `NavigationView`, but it adds the features listed here above. You have to wrap your view hierarchy inside a `NavigationStackView`:
@@ -379,7 +379,6 @@ struct MyView: View {
 
 SwiftUI is really new, there are some bugs in the framework (or unexpected behaviours) and several API not yet documented. Please, report any issue may arise and feel free to suggest any improvement or changing to this first implementation of a navigation stack.
  
-
 
 
 
