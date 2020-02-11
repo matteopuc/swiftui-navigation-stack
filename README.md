@@ -7,6 +7,10 @@ An alternative SwiftUI NavigationView implementing classic stack-based navigatio
 
 Through [SwiftPackageManager](https://swift.org/package-manager/): open xCode, click on `File -> Swift Packages -> Add Package dependency...` and use the repository URL (https://github.com/biobeats/swiftui-navigation-stack.git) to download the package.
 
+In xCode, when prompted for Version or branch, the suggestion is to use Branch: master.
+
+Then in your View simply include `import NavigationStack` and follow usage examples below.
+
 ## Usage
 
 In SwiftUI we have a couple of views to manage the navigation: `NavigationView` and `NavigationLink`. At the moment these views have some limitations:
@@ -19,6 +23,8 @@ In SwiftUI we have a couple of views to manage the navigation: `NavigationView` 
 `NavigationStackView` is a view that mimics all the behaviours belonging to the standard `NavigationView`, but it adds the features listed here above. You have to wrap your view hierarchy inside a `NavigationStackView`:
 
 ```
+import NavigationStack
+
 struct RootView: View {
     var body: some View {
         NavigationStackView {
@@ -36,6 +42,8 @@ You can even customise transitions and animations in some different ways. The `N
 - you could create the navigation stack with a custom transition:
 
 ```
+import NavigationStack
+
 struct RootView: View {
     var body: some View {
         NavigationStackView(transitionType: .custom(.scale)) {
