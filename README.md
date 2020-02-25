@@ -66,6 +66,7 @@ struct ContentView: View {
     }
 }
 ```
+![Feb-25-2020 13-00-00](https://github.com/piterwilson/swiftui-navigation-stack/raw/feature/customizable_easing/images/springy.gif)
 
 ## Push
 
