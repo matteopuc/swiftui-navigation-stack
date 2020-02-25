@@ -17,7 +17,7 @@ public enum NavigationTransition {
         return (pushTrans, popTrans)
     }
 
-    fileprivate static var defaultEasing: Animation {
+    public static var defaultEasing: Animation {
         .easeOut(duration: 0.2)
     }
 }
