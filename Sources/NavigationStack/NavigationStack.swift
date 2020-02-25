@@ -53,7 +53,7 @@ public class NavigationStack: ObservableObject {
     @Published fileprivate var currentView: ViewElement?
 
     public func push<Element: View>(_ element: Element, withId identifier: String? = nil) {
-        withAnimation(NavigationTransition.defaultEasing) {
+        withAnimation(easing) {
             navigationType = .push
             viewStack.push(ViewElement(id: identifier == nil ? UUID().uuidString : identifier!,
                                        wrappedElement: AnyView(element)))
@@ -61,7 +61,7 @@ public class NavigationStack: ObservableObject {
     }
 
     public func pop(to: PopDestination = .previous) {
-        withAnimation(NavigationTransition.defaultEasing) {
+        withAnimation(easing) {
             navigationType = .pop
             switch to {
             case .root:
