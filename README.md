@@ -55,6 +55,20 @@ struct RootView: View {
 
 ![Jan-10-2020 15-31-40](https://user-images.githubusercontent.com/5569047/72160405-9718a900-33be-11ea-8b78-6bcbbf4283d7.gif)
 
+**Note:** If you want to specify a different transition for push and pop, you can use `.asymmetric`
+
+```
+import NavigationStack
+
+struct RootView: View {
+    var body: some View {
+        NavigationStackView(transitionType: .custom(.asymmetric(insertion: .scale, removal: .slide))) {
+            MyHome()
+        }
+    }
+}
+```
+
 ## Push
 
 In order to navigate forward you have two options: 
