@@ -62,7 +62,7 @@ import NavigationStack
 
 struct RootView: View {
     var body: some View {
-        NavigationStackView(transitionType: .custom(.asymmetric(insertion: .scale, removal: .slide))) {
+        NavigationStackView(transitionType: .custom(.asymmetric(insertion: .opacity, removal: .scale))) {
             MyHome()
         }
     }
