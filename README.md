@@ -55,6 +55,18 @@ struct RootView: View {
 
 ![Jan-10-2020 15-31-40](https://user-images.githubusercontent.com/5569047/72160405-9718a900-33be-11ea-8b78-6bcbbf4283d7.gif)
 
+- you could specify the easing applied to the transition specified in `transitionType`
+
+```
+struct ContentView: View {
+    var body: some View {
+        NavigationStackView(transitionType: .custom(.scale), easing: .spring(response: 0.5, dampingFraction: 0.25, blendDuration: 0.5)) {
+            MyHome()
+        }.edgesIgnoringSafeArea(.all)
+    }
+}
+```
+
 ## Push
 
 In order to navigate forward you have two options: 
