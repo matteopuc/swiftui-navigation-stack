@@ -130,7 +130,7 @@ public struct NavigationStackView<Root>: View where Root: View {
     private let rootView: Root
     private let transitions: (push: AnyTransition, pop: AnyTransition)
 
-    public init(transitionType: NavigationTransition = .default, easing: Animation = NavigationTransition.defaultEasing, @ViewBuilder rootView: () -> Root) {
+    public init(transitionType: NavigationTransition = .default, easing: Animation = .easeOut(duration: 0.2), @ViewBuilder rootView: () -> Root) {
         self.rootView = rootView()
         self.navViewModel = NavigationStack(easing: easing)
         switch transitionType {
