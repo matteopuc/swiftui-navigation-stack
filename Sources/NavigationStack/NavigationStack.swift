@@ -40,7 +40,7 @@ public class NavigationStack: ObservableObject {
     /// Customizable easing to apply in pop and push transitions
     private let easing: Animation
     
-    init(easing: Animation = NavigationTransition.defaultEasing) {
+    init(easing: Animation) {
         self.easing = easing
     }
     
