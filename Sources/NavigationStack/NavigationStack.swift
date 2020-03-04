@@ -88,7 +88,7 @@ public class NavigationStack: ObservableObject {
 
         mutating func popToView(withId identifier: String) {
             guard let viewIndex = indexForView(withId: identifier) else {
-                fatalError("NavigationStackView: you are trying to pop to a view that doesn't exist. Identifier: \"\(identifier)\"")
+                fatalError("Identifier \"\(identifier)\" not found. You are trying to pop to a view that doesn't exist.")
             }
             views.removeLast(views.count - (viewIndex + 1))
         }
