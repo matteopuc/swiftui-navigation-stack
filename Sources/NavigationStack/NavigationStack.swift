@@ -38,7 +38,7 @@ public enum PopDestination {
 public class NavigationStack: ObservableObject {
     fileprivate private(set) var navigationType = NavigationType.push
     /// Customizable easing to apply in pop and push transitions
-    fileprivate private(set) var easing: Animation
+    private let easing: Animation
     
     init(easing: Animation = NavigationTransition.defaultEasing) {
         self.easing = easing
