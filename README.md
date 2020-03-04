@@ -55,18 +55,23 @@ struct RootView: View {
 
 ![Jan-10-2020 15-31-40](https://user-images.githubusercontent.com/5569047/72160405-9718a900-33be-11ea-8b78-6bcbbf4283d7.gif)
 
-- you could specify the easing applied to the transition specified in `transitionType`
-
+- `NavigationStackView` has a default easing for transitions. The easing can be customised during the initialisation
 ```
-struct ContentView: View {
+struct RootView: View {
     var body: some View {
         NavigationStackView(transitionType: .custom(.scale), easing: .spring(response: 0.5, dampingFraction: 0.25, blendDuration: 0.5)) {
             MyHome()
-        }.edgesIgnoringSafeArea(.all)
+        }
     }
 }
 ```
-![Feb-25-2020 13-00-00](https://github.com/piterwilson/swiftui-navigation-stack/raw/feature/customizable_easing/images/springy.gif)
+**Important:** The above is the recommended way to customise the easing function for your transitions. Please, note that you could even specify the easing this other way:
+
+```
+NavigationStackView(transitionType: .custom(AnyTransition.scale.animation(.spring(response: 0.5, dampingFraction: 0.25, blendDuration: 0.5))))
+```
+
+attaching the easing directly to the transition. **Don't do this**. SwiftUI has still some problems with implicit animations attached to transitions, so it may not work. For example, implicit animations attached to a .slide transition won't work.
 
 ## Push
 
