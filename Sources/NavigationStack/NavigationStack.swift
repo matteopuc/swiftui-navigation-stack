@@ -16,10 +16,6 @@ public enum NavigationTransition {
         let popTrans = AnyTransition.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing))
         return (pushTrans, popTrans)
     }
-
-    public static var defaultEasing: Animation {
-        .easeOut(duration: 0.2)
-    }
 }
 
 private enum NavigationType {
