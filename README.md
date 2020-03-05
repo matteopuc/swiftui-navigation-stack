@@ -369,18 +369,6 @@ This time the transition animation involves the whole screen:
 
 ## Issues
 
-There are several issues at the moment:
-
-- during the `NavigationStackView` initialisation you can attach animations to your transitions to override the default navigation stack animation. For instance:
-
-```
-NavigationStackView(transitionType: .custom(AnyTransition.scale.animation(.spring()))) {
-    Home()
-}
-```
-
-this feature is not working with some kind of transitions (for example the `.move` transition). In this case the animation you'll get is the `NavigationStackView` default animation (an easy out that lasts 0.2s) which is specified in the implementation (in the `NavigationStack` class) through an explicit `withAnimation` block. At the moment it seems that some transitions can work only with explicit animations defined by the `withAnimation` block. It's very likely a SwiftUI bug;
-
 - SwiftUI resets all the properties of a view marked with `@State` every time the view is removed from a view hierarchy. For the `NavigationStackView` this is a problem because when I come back to a previous view (with a pop operation) I want all my view controls to be as I left them before (for example I want my `TextField`s to contain the text I previously typed in). It seems that the solution to this problem is using the `.id` modifier specifying an id for the views I don't want SwiftUI to reset. According to the Apple documentation the `.id` modifier:
 
 > Summary
