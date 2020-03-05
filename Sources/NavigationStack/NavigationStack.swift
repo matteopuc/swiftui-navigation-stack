@@ -16,10 +16,6 @@ public enum NavigationTransition {
         let popTrans = AnyTransition.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing))
         return (pushTrans, popTrans)
     }
-
-    fileprivate static var defaultEasing: Animation {
-        .easeOut(duration: 0.2)
-    }
 }
 
 private enum NavigationType {
@@ -37,6 +33,13 @@ public enum PopDestination {
 
 public class NavigationStack: ObservableObject {
     fileprivate private(set) var navigationType = NavigationType.push
+    /// Customizable easing to apply in pop and push transitions
+    private let easing: Animation
+    
+    init(easing: Animation) {
+        self.easing = easing
+    }
+    
     private var viewStack = ViewStack() {
         didSet {
             currentView = viewStack.peek()
@@ -46,7 +49,7 @@ public class NavigationStack: ObservableObject {
     @Published fileprivate var currentView: ViewElement?
 
     public func push<Element: View>(_ element: Element, withId identifier: String? = nil) {
-        withAnimation(NavigationTransition.defaultEasing) {
+        withAnimation(easing) {
             navigationType = .push
             viewStack.push(ViewElement(id: identifier == nil ? UUID().uuidString : identifier!,
                                        wrappedElement: AnyView(element)))
@@ -54,7 +57,7 @@ public class NavigationStack: ObservableObject {
     }
 
     public func pop(to: PopDestination = .previous) {
-        withAnimation(NavigationTransition.defaultEasing) {
+        withAnimation(easing) {
             navigationType = .pop
             switch to {
             case .root:
@@ -118,13 +121,14 @@ private struct ViewElement: Identifiable, Equatable {
 // MARK: Views
 
 public struct NavigationStackView<Root>: View where Root: View {
-    @ObservedObject private var navViewModel = NavigationStack()
+    @ObservedObject private var navViewModel: NavigationStack
     private let rootViewID = "root"
     private let rootView: Root
     private let transitions: (push: AnyTransition, pop: AnyTransition)
 
-    public init(transitionType: NavigationTransition = .default, @ViewBuilder rootView: () -> Root) {
+    public init(transitionType: NavigationTransition = .default, easing: Animation = .easeOut(duration: 0.2), @ViewBuilder rootView: () -> Root) {
         self.rootView = rootView()
+        self.navViewModel = NavigationStack(easing: easing)
         switch transitionType {
         case .none:
             self.transitions = (.identity, .identity)

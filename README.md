@@ -55,6 +55,24 @@ struct RootView: View {
 
 ![Jan-10-2020 15-31-40](https://user-images.githubusercontent.com/5569047/72160405-9718a900-33be-11ea-8b78-6bcbbf4283d7.gif)
 
+- `NavigationStackView` has a default easing for transitions. The easing can be customised during the initialisation
+```
+struct RootView: View {
+    var body: some View {
+        NavigationStackView(transitionType: .custom(.scale), easing: .spring(response: 0.5, dampingFraction: 0.25, blendDuration: 0.5)) {
+            MyHome()
+        }
+    }
+}
+```
+**Important:** The above is the recommended way to customise the easing function for your transitions. Please, note that you could even specify the easing this other way:
+
+```
+NavigationStackView(transitionType: .custom(AnyTransition.scale.animation(.spring(response: 0.5, dampingFraction: 0.25, blendDuration: 0.5))))
+```
+
+attaching the easing directly to the transition. **Don't do this**. SwiftUI has still some problems with implicit animations attached to transitions, so it may not work. For example, implicit animations attached to a .slide transition won't work.
+
 ## Push
 
 In order to navigate forward you have two options: 
@@ -350,18 +368,6 @@ This time the transition animation involves the whole screen:
 ![Jan-10-2020 16-10-59](https://user-images.githubusercontent.com/5569047/72163299-deedff00-33c3-11ea-935f-ce4341afe201.gif)
 
 ## Issues
-
-There are several issues at the moment:
-
-- during the `NavigationStackView` initialisation you can attach animations to your transitions to override the default navigation stack animation. For instance:
-
-```
-NavigationStackView(transitionType: .custom(AnyTransition.scale.animation(.spring()))) {
-    Home()
-}
-```
-
-this feature is not working with some kind of transitions (for example the `.move` transition). In this case the animation you'll get is the `NavigationStackView` default animation (an easy out that lasts 0.2s) which is specified in the implementation (in the `NavigationStack` class) through an explicit `withAnimation` block. At the moment it seems that some transitions can work only with explicit animations defined by the `withAnimation` block. It's very likely a SwiftUI bug;
 
 - SwiftUI resets all the properties of a view marked with `@State` every time the view is removed from a view hierarchy. For the `NavigationStackView` this is a problem because when I come back to a previous view (with a pop operation) I want all my view controls to be as I left them before (for example I want my `TextField`s to contain the text I previously typed in). It seems that the solution to this problem is using the `.id` modifier specifying an id for the views I don't want SwiftUI to reset. According to the Apple documentation the `.id` modifier:
 
