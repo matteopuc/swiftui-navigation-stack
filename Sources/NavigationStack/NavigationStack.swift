@@ -5,13 +5,20 @@
 
 import SwiftUI
 
-/// The transition type for the whole NavigationStackView
+/// The transition type for the whole NavigationStackView.
 public enum NavigationTransition {
+    /// Transitions won't be animated.
     case none
+
+    /// Use the [default transition](x-source-tag://defaultTransition).
     case `default`
+
+    /// Use a custom transition (the transition will be applied both to push and pop operations).
     case custom(AnyTransition)
 
-    fileprivate static var defaultTransitions: (push: AnyTransition, pop: AnyTransition) {
+    /// A right-to-left slide transition on push, a left-to-right slide transition on pop.
+    /// - Tag: defaultTransition
+    public static var defaultTransitions: (push: AnyTransition, pop: AnyTransition) {
         let pushTrans = AnyTransition.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading))
         let popTrans = AnyTransition.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing))
         return (pushTrans, popTrans)
@@ -23,9 +30,15 @@ private enum NavigationType {
     case pop
 }
 
+/// Defines the type of a pop operation.
 public enum PopDestination {
+    /// Pop back to the previous view.
     case previous
+
+    /// Pop back to the root view (i.e. the first view added to the NavigationStackView during the initialization process).
     case root
+
+    /// Pop back to a view identified by a specific ID.
     case view(withId: String)
 }
 
@@ -48,6 +61,10 @@ public class NavigationStack: ObservableObject {
 
     @Published fileprivate var currentView: ViewElement?
 
+    /// Navigates to a view.
+    /// - Parameters:
+    ///   - element: The destination view.
+    ///   - identifier: The ID of the destination view (used to easily come back to it if needed).
     public func push<Element: View>(_ element: Element, withId identifier: String? = nil) {
         withAnimation(easing) {
             navigationType = .push
@@ -56,6 +73,8 @@ public class NavigationStack: ObservableObject {
         }
     }
 
+    /// Navigates back to a previous view.
+    /// - Parameter to: The destination type of the transition operation.
     public func pop(to: PopDestination = .previous) {
         withAnimation(easing) {
             navigationType = .pop
@@ -120,12 +139,18 @@ private struct ViewElement: Identifiable, Equatable {
 
 // MARK: Views
 
+/// An alternative SwiftUI NavigationView implementing classic stack-based navigation giving also some more control on animations and programmatic navigation.
 public struct NavigationStackView<Root>: View where Root: View {
     @ObservedObject private var navViewModel: NavigationStack
     private let rootViewID = "root"
     private let rootView: Root
     private let transitions: (push: AnyTransition, pop: AnyTransition)
 
+    /// Creates a NavigationStackView.
+    /// - Parameters:
+    ///   - transitionType: The type of transition to apply between views in every push and pop operation.
+    ///   - easing: The easing function to apply to every push and pop operation.
+    ///   - rootView: The very first view in the NavigationStack.
     public init(transitionType: NavigationTransition = .default, easing: Animation = .easeOut(duration: 0.2), @ViewBuilder rootView: () -> Root) {
         self.rootView = rootView()
         self.navViewModel = NavigationStack(easing: easing)
@@ -161,6 +186,7 @@ public struct NavigationStackView<Root>: View where Root: View {
     }
 }
 
+/// A view used to navigate to another view through its enclosing NavigationStack.
 public struct PushView<Label, Destination, Tag>: View where Label: View, Destination: View, Tag: Hashable {
     @EnvironmentObject private var navViewModel: NavigationStack
     private let label: Label?
@@ -170,6 +196,13 @@ public struct PushView<Label, Destination, Tag>: View where Label: View, Destina
     @Binding private var isActive: Bool
     @Binding private var selection: Tag?
 
+    /// Creates a PushView that triggers the navigation on tap or when a tag matches a specific value.
+    /// - Parameters:
+    ///   - destination: The view to navigate to.
+    ///   - destinationId: The ID of the destination view (used to easily come back to it if needed).
+    ///   - tag: A value representing this push operation.
+    ///   - selection: A binding that triggers the navigation if and when its value matches the tag value.
+    ///   - label: The actual view to tap to trigger the navigation.
     public init(destination: Destination, destinationId: String? = nil, tag: Tag, selection: Binding<Tag?>,
          @ViewBuilder label: () -> Label) {
         self.init(destination: destination, destinationId: destinationId, isActive: Binding.constant(false),
@@ -210,11 +243,23 @@ public struct PushView<Label, Destination, Tag>: View where Label: View, Destina
 }
 
 public extension PushView where Tag == Never {
+
+    /// Creates a PushView that triggers the navigation on tap.
+    /// - Parameters:
+    ///   - destination: The view to navigate to.
+    ///   - destinationId: The ID of the destination view (used to easily come back to it if needed).
+    ///   - label: The actual view to tap to trigger the navigation.
     init(destination: Destination, destinationId: String? = nil, @ViewBuilder label: () -> Label) {
         self.init(destination: destination, destinationId: destinationId, isActive: Binding.constant(false),
                   tag: nil, selection: Binding.constant(nil), label: label)
     }
 
+    /// Creates a PushView that triggers the navigation on tap or when a boolean value becomes true.
+    /// - Parameters:
+    ///   - destination: The view to navigate to.
+    ///   - destinationId: The ID of the destination view (used to easily come back to it if needed).
+    ///   - isActive: A boolean binding that triggers the navigation if and when becomes true.
+    ///   - label: The actual view to tap to trigger the navigation.
     init(destination: Destination, destinationId: String? = nil,
          isActive: Binding<Bool>, @ViewBuilder label: () -> Label) {
         self.init(destination: destination, destinationId: destinationId, isActive: isActive,
@@ -222,6 +267,7 @@ public extension PushView where Tag == Never {
     }
 }
 
+/// A view used to navigate back to a previous view through its enclosing NavigationStack.
 public struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
     @EnvironmentObject private var navViewModel: NavigationStack
     private let label: Label
@@ -230,6 +276,12 @@ public struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
     @Binding private var isActive: Bool
     @Binding private var selection: Tag?
 
+    /// Creates a PopView  that triggers the navigation on tap or when a tag matches a specific value.
+    /// - Parameters:
+    ///   - destination: The destination type of the pop operation.
+    ///   - tag: A value representing this pop operation.
+    ///   - selection: A binding that triggers the navigation if and when its value matches the tag value.
+    ///   - label: The actual view to tap to trigger the navigation.
     public init(destination: PopDestination = .previous, tag: Tag, selection: Binding<Tag?>, @ViewBuilder label: () -> Label) {
         self.init(destination: destination, isActive: Binding.constant(false),
                   tag: tag, selection: selection, label: label)
@@ -268,11 +320,21 @@ public struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
 }
 
 public extension PopView where Tag == Never {
+
+    /// Creates a PopView  that triggers the navigation on tap.
+    /// - Parameters:
+    ///   - destination: The destination type of the pop operation.
+    ///   - label: The actual view to tap to trigger the navigation.
     init(destination: PopDestination = .previous, @ViewBuilder label: () -> Label) {
         self.init(destination: destination, isActive: Binding.constant(false),
                   tag: nil, selection: Binding.constant(nil), label: label)
     }
 
+    /// Creates a PopView  that triggers the navigation on tap or when a boolean value becomes true.
+    /// - Parameters:
+    ///   - destination: The destination type of the pop operation.
+    ///   - isActive: A boolean binding that triggers the navigation if and when becomes true.
+    ///   - label: The actual view to tap to trigger the navigation.
     init(destination: PopDestination = .previous, isActive: Binding<Bool>, @ViewBuilder label: () -> Label) {
         self.init(destination: destination, isActive: isActive,
                   tag: nil, selection: Binding.constant(nil), label: label)
