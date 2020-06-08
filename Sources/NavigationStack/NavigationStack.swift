@@ -98,8 +98,9 @@ public class NavigationStack: ObservableObject {
         }
 
         mutating func push(_ element: ViewElement) {
-            if indexForView(withId: element.id) != nil {
-                fatalError("Duplicated view identifier: \"\(element.id)\". You are trying to push a view with an identifier that already exists on the navigation stack.")
+            guard indexForView(withId: element.id) != nil else {
+                print("Duplicated view identifier: \"\(element.id)\". You are trying to push a view with an identifier that already exists on the navigation stack.")
+                return
             }
             views.append(element)
         }
@@ -110,7 +111,8 @@ public class NavigationStack: ObservableObject {
 
         mutating func popToView(withId identifier: String) {
             guard let viewIndex = indexForView(withId: identifier) else {
-                fatalError("Identifier \"\(identifier)\" not found. You are trying to pop to a view that doesn't exist.")
+                print("Identifier \"\(identifier)\" not found. You are trying to pop to a view that doesn't exist.")
+                return
             }
             views.removeLast(views.count - (viewIndex + 1))
         }
