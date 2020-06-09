@@ -98,7 +98,7 @@ public class NavigationStack: ObservableObject {
         }
 
         mutating func push(_ element: ViewElement) {
-            guard indexForView(withId: element.id) != nil else {
+            guard indexForView(withId: element.id) == nil else {
                 print("Duplicated view identifier: \"\(element.id)\". You are trying to push a view with an identifier that already exists on the navigation stack.")
                 return
             }
