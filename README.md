@@ -1,13 +1,25 @@
 # swiftui-navigation-stack
 An alternative SwiftUI NavigationView implementing classic stack-based navigation giving also some more control on animations and programmatic navigation.
 
-# NavigationStackView
+# NavigationStack
 
 ## Installation
 
-Through [SwiftPackageManager](https://swift.org/package-manager/): open xCode, click on `File -> Swift Packages -> Add Package dependency...` and use the repository URL (https://github.com/biobeats/swiftui-navigation-stack.git) to download the package.
+### Swift Package Manager
+
+The [Swift Package Manager](https://swift.org/package-manager/) is a tool for automating the distribution of Swift code and is integrated into the `swift` compiler: open xCode, click on `File -> Swift Packages -> Add Package dependency...` and use the repository URL (https://github.com/biobeats/swiftui-navigation-stack.git) to download the package.
 
 In xCode, when prompted for Version or branch, the suggestion is to use Branch: master.
+
+Then in your View simply include `import NavigationStack` and follow usage examples below.
+
+### CocoaPods
+
+[CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate NavigationStack into your Xcode project using CocoaPods, specify it in your `Podfile`:
+
+```ruby
+pod 'NavigationStack', '~> 0.1.0'
+```
 
 Then in your View simply include `import NavigationStack` and follow usage examples below.
 
