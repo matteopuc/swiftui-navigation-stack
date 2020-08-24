@@ -9,13 +9,13 @@ import SwiftUI
 public enum NavigationTransition {
     /// Transitions won't be animated.
     case none
-
+    
     /// Use the [default transition](x-source-tag://defaultTransition).
     case `default`
-
+    
     /// Use a custom transition (the transition will be applied both to push and pop operations).
     case custom(AnyTransition)
-
+    
     /// A right-to-left slide transition on push, a left-to-right slide transition on pop.
     /// - Tag: defaultTransition
     public static var defaultTransitions: (push: AnyTransition, pop: AnyTransition) {
@@ -34,10 +34,10 @@ private enum NavigationType {
 public enum PopDestination {
     /// Pop back to the previous view.
     case previous
-
+    
     /// Pop back to the root view (i.e. the first view added to the NavigationStackView during the initialization process).
     case root
-
+    
     /// Pop back to a view identified by a specific ID.
     case view(withId: String)
 }
@@ -58,9 +58,9 @@ public class NavigationStack: ObservableObject {
             currentView = viewStack.peek()
         }
     }
-
+    
     @Published fileprivate var currentView: ViewElement?
-
+    
     /// Navigates to a view.
     /// - Parameters:
     ///   - element: The destination view.
@@ -72,7 +72,14 @@ public class NavigationStack: ObservableObject {
                                        wrappedElement: AnyView(element)))
         }
     }
-
+    
+    public func pushOrPop<Element: View>(_ element: Element, withId identifier: String? = nil) {
+        withAnimation(easing) {
+            navigationType = .push
+            viewStack.pushOrPopToView(ViewElement(id: identifier == nil ? UUID().uuidString : identifier!,
+                                                  wrappedElement: AnyView(element)))
+        }
+    }
     /// Navigates back to a previous view.
     /// - Parameter to: The destination type of the transition operation.
     public func pop(to: PopDestination = .previous) {
@@ -88,15 +95,15 @@ public class NavigationStack: ObservableObject {
             }
         }
     }
-
+    
     //the actual stack
     private struct ViewStack {
         private var views = [ViewElement]()
-
+        
         func peek() -> ViewElement? {
             views.last
         }
-
+        
         mutating func push(_ element: ViewElement) {
             guard indexForView(withId: element.id) == nil else {
                 print("Duplicated view identifier: \"\(element.id)\". You are trying to push a view with an identifier that already exists on the navigation stack.")
@@ -104,11 +111,11 @@ public class NavigationStack: ObservableObject {
             }
             views.append(element)
         }
-
+        
         mutating func popToPrevious() {
             _ = views.popLast()
         }
-
+        
         mutating func popToView(withId identifier: String) {
             guard let viewIndex = indexForView(withId: identifier) else {
                 print("Identifier \"\(identifier)\" not found. You are trying to pop to a view that doesn't exist.")
@@ -116,11 +123,19 @@ public class NavigationStack: ObservableObject {
             }
             views.removeLast(views.count - (viewIndex + 1))
         }
-
+        
         mutating func popToRoot() {
             views.removeAll()
         }
-
+        
+        mutating func pushOrPopToView(_ element: ViewElement) {
+            if indexForView(withId: element.id) == nil {
+                self.popToView(withId: element.id)
+                
+            }
+            views.append(element)
+        }
+        
         private func indexForView(withId identifier: String) -> Int? {
             views.firstIndex {
                 $0.id == identifier
@@ -133,7 +148,7 @@ public class NavigationStack: ObservableObject {
 private struct ViewElement: Identifiable, Equatable {
     let id: String
     let wrappedElement: AnyView
-
+    
     static func == (lhs: ViewElement, rhs: ViewElement) -> Bool {
         lhs.id == rhs.id
     }
@@ -147,7 +162,7 @@ public struct NavigationStackView<Root>: View where Root: View {
     private let rootViewID = "root"
     private let rootView: Root
     private let transitions: (push: AnyTransition, pop: AnyTransition)
-
+    
     /// Creates a NavigationStackView.
     /// - Parameters:
     ///   - transitionType: The type of transition to apply between views in every push and pop operation.
@@ -165,11 +180,11 @@ public struct NavigationStackView<Root>: View where Root: View {
             self.transitions = NavigationTransition.defaultTransitions
         }
     }
-
+    
     public var body: some View {
         let showRoot = navViewModel.currentView == nil
         let navigationType = navViewModel.navigationType
-
+        
         return ZStack {
             Group {
                 if showRoot {
@@ -197,7 +212,7 @@ public struct PushView<Label, Destination, Tag>: View where Label: View, Destina
     private let tag: Tag?
     @Binding private var isActive: Bool
     @Binding private var selection: Tag?
-
+    
     /// Creates a PushView that triggers the navigation on tap or when a tag matches a specific value.
     /// - Parameters:
     ///   - destination: The view to navigate to.
@@ -206,11 +221,11 @@ public struct PushView<Label, Destination, Tag>: View where Label: View, Destina
     ///   - selection: A binding that triggers the navigation if and when its value matches the tag value.
     ///   - label: The actual view to tap to trigger the navigation.
     public init(destination: Destination, destinationId: String? = nil, tag: Tag, selection: Binding<Tag?>,
-         @ViewBuilder label: () -> Label) {
+                @ViewBuilder label: () -> Label) {
         self.init(destination: destination, destinationId: destinationId, isActive: Binding.constant(false),
                   tag: tag, selection: selection, label: label)
     }
-
+    
     private init(destination: Destination, destinationId: String?, isActive: Binding<Bool>,
                  tag: Tag?, selection: Binding<Tag?>, @ViewBuilder label: () -> Label) {
         self.label = label()
@@ -220,7 +235,7 @@ public struct PushView<Label, Destination, Tag>: View where Label: View, Destina
         self.destination = destination
         self._selection = selection
     }
-
+    
     public var body: some View {
         if let selection = selection, let tag = tag, selection == tag {
             DispatchQueue.main.async {
@@ -238,14 +253,14 @@ public struct PushView<Label, Destination, Tag>: View where Label: View, Destina
             self.push()
         }
     }
-
+    
     private func push() {
         self.navViewModel.push(self.destination, withId: self.destinationId)
     }
 }
 
 public extension PushView where Tag == Never {
-
+    
     /// Creates a PushView that triggers the navigation on tap.
     /// - Parameters:
     ///   - destination: The view to navigate to.
@@ -255,7 +270,7 @@ public extension PushView where Tag == Never {
         self.init(destination: destination, destinationId: destinationId, isActive: Binding.constant(false),
                   tag: nil, selection: Binding.constant(nil), label: label)
     }
-
+    
     /// Creates a PushView that triggers the navigation on tap or when a boolean value becomes true.
     /// - Parameters:
     ///   - destination: The view to navigate to.
@@ -277,7 +292,7 @@ public struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
     private let tag: Tag?
     @Binding private var isActive: Bool
     @Binding private var selection: Tag?
-
+    
     /// Creates a PopView  that triggers the navigation on tap or when a tag matches a specific value.
     /// - Parameters:
     ///   - destination: The destination type of the pop operation.
@@ -288,7 +303,7 @@ public struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
         self.init(destination: destination, isActive: Binding.constant(false),
                   tag: tag, selection: selection, label: label)
     }
-
+    
     private init(destination: PopDestination, isActive: Binding<Bool>, tag: Tag?,
                  selection: Binding<Tag?>, @ViewBuilder label: () -> Label) {
         self.label = label()
@@ -297,7 +312,7 @@ public struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
         self._selection = selection
         self.tag = tag
     }
-
+    
     public var body: some View {
         if let selection = selection, let tag = tag, selection == tag {
             DispatchQueue.main.async {
@@ -315,14 +330,14 @@ public struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
             self.pop()
         }
     }
-
+    
     private func pop() {
         self.navViewModel.pop(to: self.destination)
     }
 }
 
 public extension PopView where Tag == Never {
-
+    
     /// Creates a PopView  that triggers the navigation on tap.
     /// - Parameters:
     ///   - destination: The destination type of the pop operation.
@@ -331,7 +346,7 @@ public extension PopView where Tag == Never {
         self.init(destination: destination, isActive: Binding.constant(false),
                   tag: nil, selection: Binding.constant(nil), label: label)
     }
-
+    
     /// Creates a PopView  that triggers the navigation on tap or when a boolean value becomes true.
     /// - Parameters:
     ///   - destination: The destination type of the pop operation.
