@@ -7,7 +7,7 @@ An alternative SwiftUI NavigationView implementing classic stack-based navigatio
 
 ### Swift Package Manager
 
-The [Swift Package Manager](https://swift.org/package-manager/) is a tool for automating the distribution of Swift code and is integrated into the `swift` compiler: open xCode, click on `File -> Swift Packages -> Add Package dependency...` and use the repository URL (https://github.com/biobeats/swiftui-navigation-stack.git) to download the package.
+The [Swift Package Manager](https://swift.org/package-manager/) is a tool for automating the distribution of Swift code and is integrated into the `swift` compiler: open xCode, click on `File -> Swift Packages -> Add Package dependency...` and use the repository URL (https://github.com/matteopuc/swiftui-navigation-stack.git) to download the package.
 
 In xCode, when prompted for Version or branch, the suggestion is to use Branch: master.
 
