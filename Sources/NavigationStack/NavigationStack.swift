@@ -45,14 +45,19 @@ public enum PopDestination {
 // MARK: ViewModel
 
 public class NavigationStack: ObservableObject {
+
+    /// Default transition animation
+    public static let defaultEasing = Animation.easeOut(duration: 0.2)
+
     fileprivate private(set) var navigationType = NavigationType.push
+
     /// Customizable easing to apply in pop and push transitions
     private let easing: Animation
-    
-    init(easing: Animation) {
+
+    public init(easing: Animation = defaultEasing) {
         self.easing = easing
     }
-    
+
     private var viewStack = ViewStack() {
         didSet {
             currentView = viewStack.peek()
@@ -153,9 +158,18 @@ public struct NavigationStackView<Root>: View where Root: View {
     ///   - transitionType: The type of transition to apply between views in every push and pop operation.
     ///   - easing: The easing function to apply to every push and pop operation.
     ///   - rootView: The very first view in the NavigationStack.
-    public init(transitionType: NavigationTransition = .default, easing: Animation = .easeOut(duration: 0.2), @ViewBuilder rootView: () -> Root) {
+    public init(transitionType: NavigationTransition = .default, easing: Animation = NavigationStack.defaultEasing, @ViewBuilder rootView: () -> Root) {
+        self.init(transitionType: transitionType, navigationStack: NavigationStack(easing: easing), rootView: rootView)
+    }
+
+    /// Creates a NavigationStackView with the provided NavigationStack
+    /// - Parameters:
+    ///   - transitionType: The type of transition to apply between views in every push and pop operation.
+    ///   - navigationStack: the shared NavigationStack
+    ///   - rootView: The very first view in the NavigationStack.
+    public init(transitionType: NavigationTransition = .default, navigationStack: NavigationStack, @ViewBuilder rootView: () -> Root) {
         self.rootView = rootView()
-        self.navViewModel = NavigationStack(easing: easing)
+        self.navViewModel = navigationStack
         switch transitionType {
         case .none:
             self.transitions = (.identity, .identity)

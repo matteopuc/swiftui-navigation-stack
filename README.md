@@ -278,6 +278,47 @@ struct ChildView: View {
 }
 ```
 
+## NavigationStack injection
+
+By default you can programmatically push and pop only inside the `NavigationStackView` hierarchy (by accessing the `NavigationStack` environment object). If you want to use the `NavigationStack` outside the `NavigationStackView` you need to create your own `NavigationStack` (wherever you want) **and pass it as parameter to the `NavigationStackView`**.
+
+**Important:** Every `NavigationStack` must be associated to a `NavigationStackView`. A `NavigationStack` cannot be shared between multiple `NavigationStackView`.
+
+This is useful when you want to _decouple your routing logic from views by using your own router class_, for example:
+
+```
+class MyRouter {
+    private let navStack: NavigationStack
+
+    init(navStack: NavigationStack) {
+        self.navStack = navStack
+    }
+
+    func rootView() -> some View {
+        RootView()
+    }
+
+    func toLogin() {
+        self.navStack.push(LoginScreen())
+    }
+
+    func toSignUp() {
+        self.navStack.push(SignUpScreen())
+    }
+}
+
+struct RootView: View {
+    let navStack: NavigationStack
+    let router: MyRouter
+
+    var body: some View {
+        NavigationStackView(navigationStack: navStack) {
+            router.rootView()
+        }
+    }
+}
+```
+
 ## Important
 
 Please, note that `NavigationStackView` navigates between views and two views may be smaller than the entire screen. In that case the transition animation won't involve the whole screen, but just the two views. Let's make an example:
@@ -411,5 +452,3 @@ struct MyView: View {
 
 SwiftUI is really new, there are some bugs in the framework (or unexpected behaviours) and several API not yet documented. Please, report any issue may arise and feel free to suggest any improvement or changing to this first implementation of a navigation stack.
  
-
-
