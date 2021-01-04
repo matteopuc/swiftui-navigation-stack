@@ -85,6 +85,63 @@ NavigationStackView(transitionType: .custom(AnyTransition.scale.animation(.sprin
 
 attaching the easing directly to the transition. **Don't do this**. SwiftUI has still some problems with implicit animations attached to transitions, so it may not work. For example, implicit animations attached to a .slide transition won't work.
 
+## NavigationStack injection
+
+If you want to use the NavigationStack also outside the views hierachy you need to create you custom NavigationStack and pass it as parameter to the NavigationStackView.
+
+This is useful when you want to _decouple your routing logic from views by using your own router class_, for example:
+
+```
+class MyRouter {
+    let navStack: NavigationStack
+
+    init(navStack: NavigationStack) {
+        self.navStack = navStack
+    }
+
+    func rootView() {
+        if userIsLoggedIn() {
+            return HomeScreen()
+        } else {
+            return LoginScreen()
+        }
+    }
+
+    func toLogin() {
+        self.navStack.push(LoginScreen())
+    }
+
+    //...
+}
+
+struct ContentView: View {
+    let navStack: NavigationStack
+    let router: MyRouter
+
+    var body: some View {
+        NavigationStackView(navigationStack: navStack) {
+            router.rootView()
+        }
+    }
+}
+```
+
+Setup the ContentView in your SceneDelegate (or similarly in the App class)
+
+```
+// Create the SwiftUI view that provides the window contents.
+let contentView = ContentView(navStack: Injector.shared.navStack,
+                                router: Injector.shared.router)
+
+// Use a UIHostingController as window root view controller.
+if let windowScene = scene as? UIWindowScene {
+    let window = UIWindow(windowScene: windowScene)
+    window.rootViewController = UIHostingController(rootView: contentView)
+    self.window = window
+    window.makeKeyAndVisible()
+}
+```
+
 ## Push
 
 In order to navigate forward you have two options: 
