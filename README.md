@@ -18,7 +18,7 @@ Then in your View simply include `import NavigationStack` and follow usage examp
 [CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate NavigationStack into your Xcode project using CocoaPods, specify it in your `Podfile`:
 
 ```ruby
-pod 'NavigationStack', '~> 0.1.0'
+pod 'NavigationStack'
 ```
 
 Then in your View simply include `import NavigationStack` and follow usage examples below.
