@@ -280,22 +280,28 @@ struct ChildView: View {
 
 ## NavigationStack injection
 
-By default you can programmatically push and pop only inside the `NavigationStackView` hierarchy (by accessing the `NavigationStack` environment object). If you want to use the `NavigationStack` outside the `NavigationStackView` you need to create your own `NavigationStack` (wherever you want) **and pass it as parameter to the `NavigationStackView`**.
+By default you can programmatically push and pop only inside the `NavigationStackView` hierarchy (by accessing the `NavigationStack` environment object). If you want to use the `NavigationStack` outside the `NavigationStackView` you need to create your own `NavigationStack` (wherever you want) **and pass it as a parameter to the `NavigationStackView`**. This is useful when you want to decouple your routing logic from views.
 
 **Important:** Every `NavigationStack` must be associated to a `NavigationStackView`. A `NavigationStack` cannot be shared between multiple `NavigationStackView`.
 
-This is useful when you want to _decouple your routing logic from views by using your own router class_, for example:
+For example:
 
 ```
+struct RootView: View {
+    let navigationStack: NavigationStack
+
+    var body: some View {
+        NavigationStackView(navigationStack: navigationStack) {
+            HomeScreen(router: MyRouter(navStack: navigationStack))
+        }
+    }
+}
+
 class MyRouter {
     private let navStack: NavigationStack
 
     init(navStack: NavigationStack) {
         self.navStack = navStack
-    }
-
-    func rootView() -> some View {
-        RootView()
     }
 
     func toLogin() {
@@ -307,13 +313,18 @@ class MyRouter {
     }
 }
 
-struct RootView: View {
-    let navStack: NavigationStack
+struct HomeScreen: View {
     let router: MyRouter
 
     var body: some View {
-        NavigationStackView(navigationStack: navStack) {
-            router.rootView()
+        VStack {
+            Text("Home")
+            Button("To Login") {
+                router.toLogin()
+            }
+            Button("To SignUp") {
+                router.toSignUp()
+            }
         }
     }
 }
