@@ -196,6 +196,7 @@ public struct NavigationStackView<Root>: View where Root: View {
                         .id(navViewModel.currentView!.id)
                         .transition(navigationType == .push ? transitions.push : transitions.pop)
                         .environmentObject(navViewModel)
+                        .zIndex(navigationType == .push ? 1 : 0)
                 }
             }
         }
