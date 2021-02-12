@@ -330,6 +330,85 @@ struct HomeScreen: View {
 }
 ```
 
+`NavigationStack` has a read-only property `depth` which indicates how deep the stack is. Root view is depth 0.
+
+
+## NavigationStackView grouping
+
+By default the `NavigationStackView` places the displayed view inside a `Group` and `ZStack`. setting the initialiser parameter `noGroup` to `true`, will return the view directly as its content. This is useful if the `NavigationStackView` is inside a `List` and the navigation stack is used to exchange list rows.
+
+
+## Using the NavigationBar title and back button
+
+You can combine the `NavigationStackView` with a `NavigationView` to make use of the toolbar. The top view using the `NavigationStackView` should be displayed by a `NavigationLink`.
+
+```
+var body: some View {
+    NavigationView {
+        NavigationLink(destination: DetailStackView(item: item)) {
+            Text(item.name)
+        }
+    }
+}
+```
+
+Then set the toolbar title and buttons on the view above the `NavigationStackView`. In the following example, the navigation bar title may be set by lower views through a `PreferenceKey` set by the `.listTitle()` view modifier. A back button is displayed on the right of the navigation bar if the view stack has a depth greater than 0.
+
+```
+// Embed the list view in a NavigationStackView
+struct DetailStackView: View {
+    var item: AnItem
+
+    @ObservedObject var navigationStack = NavigationStack()
+
+    @State var toolbarTitle: String = ""
+
+    var body: some View {
+        List {
+            NavigationStackView(noGroup: true, navigationStack: navigationStack) {
+                DetailListView(item: item)
+                    .listTitle(item.name)
+            }
+        }
+        .listStyle(PlainListStyle())
+        .animation(nil)
+
+        // Updated title
+        .onPreferenceChange(ListTitleKey.self) { value in
+            toolbarTitle = value
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("\(toolbarTitle) \(self.navigationStack.depth)")
+        .toolbar(content: {
+            ToolbarItem(id: "BackButton", placement: .navigationBarLeading, showsByDefault: self.navigationStack.depth > 0) {
+                Button(action: {
+                    self.navigationStack.pop()
+                }, label: {
+                    Image(systemName: "chevron.left")
+                })
+                .opacity(self.navigationStack.depth > 0  ? 1.0 : 0.0)
+            }
+        })
+    }
+}
+
+
+// Preference Key to send title back down to DetailStackView
+struct ListTitleKey: PreferenceKey {
+    static var defaultValue: String = ""
+
+    static func reduce(value: inout String, nextValue: () -> String) {
+        value = nextValue()
+    }
+}
+
+extension View {
+    func listTitle(_ title: String) -> some View {
+        self.preference(key: ListTitleKey.self, value: title)
+    }
+}
+
+```
 ## Important
 
 Please, note that `NavigationStackView` navigates between views and two views may be smaller than the entire screen. In that case the transition animation won't involve the whole screen, but just the two views. Let's make an example:

@@ -64,6 +64,8 @@ public class NavigationStack: ObservableObject {
         }
     }
 
+    public var depth: Int { viewStack.depth }
+
     @Published fileprivate var currentView: ViewElement?
 
     /// Navigates to a view.
@@ -131,6 +133,8 @@ public class NavigationStack: ObservableObject {
                 $0.id == identifier
             }
         }
+
+        fileprivate var depth: Int { views.count }
     }
 }
 
@@ -152,24 +156,28 @@ public struct NavigationStackView<Root>: View where Root: View {
     private let rootViewID = "root"
     private let rootView: Root
     private let transitions: (push: AnyTransition, pop: AnyTransition)
+    private let noGroup: Bool
 
     /// Creates a NavigationStackView.
     /// - Parameters:
+    ///   - noGroup: If true then don't wrap views in ZStack and Group (default false)
     ///   - transitionType: The type of transition to apply between views in every push and pop operation.
     ///   - easing: The easing function to apply to every push and pop operation.
     ///   - rootView: The very first view in the NavigationStack.
-    public init(transitionType: NavigationTransition = .default, easing: Animation = NavigationStack.defaultEasing, @ViewBuilder rootView: () -> Root) {
-        self.init(transitionType: transitionType, navigationStack: NavigationStack(easing: easing), rootView: rootView)
+    public init(noGroup: Bool = false, transitionType: NavigationTransition = .default, easing: Animation = NavigationStack.defaultEasing, @ViewBuilder rootView: () -> Root) {
+        self.init(noGroup: noGroup, transitionType: transitionType, navigationStack: NavigationStack(easing: easing), rootView: rootView)
     }
 
     /// Creates a NavigationStackView with the provided NavigationStack
     /// - Parameters:
+    ///   - noGroup: If true then don't wrap views in ZStack and Group (default false)
     ///   - transitionType: The type of transition to apply between views in every push and pop operation.
     ///   - navigationStack: the shared NavigationStack
     ///   - rootView: The very first view in the NavigationStack.
-    public init(transitionType: NavigationTransition = .default, navigationStack: NavigationStack, @ViewBuilder rootView: () -> Root) {
+    public init(noGroup: Bool = false, transitionType: NavigationTransition = .default, navigationStack: NavigationStack, @ViewBuilder rootView: () -> Root) {
         self.rootView = rootView()
         self.navViewModel = navigationStack
+        self.noGroup = noGroup
         switch transitionType {
         case .none:
             self.transitions = (.identity, .identity)
@@ -184,18 +192,32 @@ public struct NavigationStackView<Root>: View where Root: View {
         let showRoot = navViewModel.currentView == nil
         let navigationType = navViewModel.navigationType
 
-        return ZStack {
-            Group {
-                if showRoot {
-                    rootView
-                        .id(rootViewID)
-                        .transition(navigationType == .push ? transitions.push : transitions.pop)
-                        .environmentObject(navViewModel)
-                } else {
-                    navViewModel.currentView!.wrappedElement
-                        .id(navViewModel.currentView!.id)
-                        .transition(navigationType == .push ? transitions.push : transitions.pop)
-                        .environmentObject(navViewModel)
+        if noGroup {
+            if showRoot {
+                rootView
+                    .id(rootViewID)
+                    .transition(navigationType == .push ? transitions.push : transitions.pop)
+                    .environmentObject(navViewModel)
+            } else {
+                navViewModel.currentView!.wrappedElement
+                    .id(navViewModel.currentView!.id)
+                    .transition(navigationType == .push ? transitions.push : transitions.pop)
+                    .environmentObject(navViewModel)
+            }
+        } else {
+            ZStack {
+                Group {
+                    if showRoot {
+                        rootView
+                            .id(rootViewID)
+                            .transition(navigationType == .push ? transitions.push : transitions.pop)
+                            .environmentObject(navViewModel)
+                    } else {
+                        navViewModel.currentView!.wrappedElement
+                            .id(navViewModel.currentView!.id)
+                            .transition(navigationType == .push ? transitions.push : transitions.pop)
+                            .environmentObject(navViewModel)
+                    }
                 }
             }
         }
