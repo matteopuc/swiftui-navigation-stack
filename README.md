@@ -17,7 +17,7 @@ Then in your View simply include `import NavigationStack` and follow usage examp
 
 [CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate NavigationStack into your Xcode project using CocoaPods, specify it in your `Podfile`:
 
-```ruby
+```swift
 pod 'NavigationStack'
 ```
 
@@ -34,7 +34,7 @@ In SwiftUI we have a couple of views to manage the navigation: `NavigationView` 
 
 `NavigationStackView` is a view that mimics all the behaviours belonging to the standard `NavigationView`, but it adds the features listed here above. You have to wrap your view hierarchy inside a `NavigationStackView`:
 
-```
+```swift
 import NavigationStack
 
 struct RootView: View {
@@ -53,7 +53,7 @@ You can even customise transitions and animations in some different ways. The `N
 - you could decide to go for no transition at all by creating the navigation stack this way `NavigationStackView(transitionType: .none)`;
 - you could create the navigation stack with a custom transition:
 
-```
+```swift
 import NavigationStack
 
 struct RootView: View {
@@ -68,7 +68,7 @@ struct RootView: View {
 ![Jan-10-2020 15-31-40](https://user-images.githubusercontent.com/5569047/72160405-9718a900-33be-11ea-8b78-6bcbbf4283d7.gif)
 
 - `NavigationStackView` has a default easing for transitions. The easing can be customised during the initialisation
-```
+```swift
 struct RootView: View {
     var body: some View {
         NavigationStackView(transitionType: .custom(.scale), easing: .spring(response: 0.5, dampingFraction: 0.25, blendDuration: 0.5)) {
@@ -79,7 +79,7 @@ struct RootView: View {
 ```
 **Important:** The above is the recommended way to customise the easing function for your transitions. Please, note that you could even specify the easing this other way:
 
-```
+```swift
 NavigationStackView(transitionType: .custom(AnyTransition.scale.animation(.spring(response: 0.5, dampingFraction: 0.25, blendDuration: 0.5))))
 ```
 
@@ -96,7 +96,7 @@ In order to navigate forward you have two options:
 
 The basic usage of `PushView` is:
 
-```
+```swift
 PushView(destination: ChildView()) {
     Text("PUSH")
 }
@@ -104,7 +104,7 @@ PushView(destination: ChildView()) {
 
 which creates a tappable view (in this case a simple `Text`) to navigate to a destination. There are other ways to trigger the navigation using the `PushView`:
 
-```
+```swift
 struct MyHome: View {
     @State private var isActive = false
     
@@ -128,7 +128,7 @@ this way you have a tappable view as before, but you can even exploit the `isAct
 
 If you have several destinations and you want to avoid having a lot of `@State` booleans you can use this other method:
 
-```
+```swift
 enum ViewDestinations {
     case noDestination
     case child1
@@ -170,7 +170,7 @@ Now you have three tappable views and the chance to trigger the navigation throu
 
 Inside the `NavigationStackView` you have access to the navigation stack as an `EnvironmentObject`. If you need to trigger the navigation programmatically without relying on a `PushView` (i.e. without having a tappable view) you can do like this:
 
-```
+```swift
 struct MyHome: View {
     @ObservedObject private var viewModel = ViewModel()
     @EnvironmentObject private var navigationStack: NavigationStack
@@ -193,7 +193,7 @@ struct MyHome: View {
 
 It's not mandatory, but if you want to come back to a specific view at some point later you need to specify an ID for that view. Both `PushView` and programmatic push allow you to do that:
 
-```
+```swift
 struct MyHome: View {
     private static let childID = "childID"
     @ObservedObject private var viewModel = ViewModel()
@@ -229,7 +229,7 @@ Pop operation works as the push operation. We have the same two options:
 
 The basic usage of `PopView` is: 
 
-```
+```swift
 struct ChildView: View {
     var body: some View {
         PopView {
@@ -241,7 +241,7 @@ struct ChildView: View {
 
 which pops to the previous view. You can even specify a destination for your pop operation:
 
-```
+```swift
 struct ChildView: View {
     var body: some View {
         VStack {
@@ -261,7 +261,7 @@ struct ChildView: View {
 
 `PopView` has the same features as the `PushView`. You can create a `PopView` that triggers with the `isActive` bool or with the `tag`. Also, you can trigger the navigation programmatically without relying on the `PopView` itself, but accessing the navigation stack directly:
 
-```
+```swift
 struct ChildView: View {
     @ObservedObject private var viewModel = ViewModel()
     @EnvironmentObject private var navigationStack: NavigationStack
@@ -286,7 +286,7 @@ By default you can programmatically push and pop only inside the `NavigationStac
 
 For example:
 
-```
+```swift
 struct RootView: View {
     let navigationStack: NavigationStack
 
@@ -334,7 +334,7 @@ struct HomeScreen: View {
 
 Please, note that `NavigationStackView` navigates between views and two views may be smaller than the entire screen. In that case the transition animation won't involve the whole screen, but just the two views. Let's make an example:
 
-```
+```swift
 struct Root: View {
     var body: some View {
         NavigationStackView {
@@ -373,7 +373,7 @@ The transition animation uses just the minimum amount of space necessary for the
 
 On the other hand you also probably want to use the `NavgationStackView` to navigate screens. Since in SwiftUI a screen (the old UIKit `ViewController`) it's just a `View` I suggest you create an handy and simple custom view called `Screen` like this:
 
-```
+```swift
 extension Color {
     static let myAppBgColor = Color.white
 }
@@ -392,7 +392,7 @@ struct Screen<Content>: View where Content: View {
 
 Now we can rewrite the example above using the `Screen` view:
 
-```
+```swift
 struct Root: View {
     var body: some View {
         NavigationStackView {
@@ -440,7 +440,7 @@ This time the transition animation involves the whole screen:
 
 but again, it seems that this API is currently not working as expected (take a look at this interesting post: https://swiftui-lab.com/swiftui-id/). In order to workaround this problem, then, you have to use `@ObservableObject` when you need to make some state persist between push/pop operations. For example:
 
-```
+```swift
 class ViewModel: ObservableObject {
     @Published var text = ""
 }
@@ -462,4 +462,3 @@ struct MyView: View {
 ### Other
 
 SwiftUI is really new, there are some bugs in the framework (or unexpected behaviours) and several API not yet documented. Please, report any issue may arise and feel free to suggest any improvement or changing to this first implementation of a navigation stack.
- 
