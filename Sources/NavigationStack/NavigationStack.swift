@@ -149,7 +149,6 @@ private struct ViewElement: Identifiable, Equatable {
 /// An alternative SwiftUI NavigationView implementing classic stack-based navigation giving also some more control on animations and programmatic navigation.
 public struct NavigationStackView<Root>: View where Root: View {
     @ObservedObject private var navViewModel: NavigationStack
-    private let rootViewID = "root"
     private let rootView: Root
     private let transitions: (push: AnyTransition, pop: AnyTransition)
 
@@ -188,12 +187,10 @@ public struct NavigationStackView<Root>: View where Root: View {
             Group {
                 if showRoot {
                     rootView
-                        .id(rootViewID)
                         .transition(navigationType == .push ? transitions.push : transitions.pop)
                         .environmentObject(navViewModel)
                 } else {
-                    navViewModel.currentView!.wrappedElement
-                        .id(navViewModel.currentView!.id)
+                    navViewModel.currentView!.wrappedElement                        
                         .transition(navigationType == .push ? transitions.push : transitions.pop)
                         .environmentObject(navViewModel)
                 }
