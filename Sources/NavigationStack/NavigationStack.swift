@@ -10,16 +10,24 @@ enum NavigationType {
     case pop
 }
 
+
+/** The manager behind the `NavigationStackView`. It also enables programmatic navigation.
+
+ A `NavigationStack` is automatically injected as an `@EnvironmentObject` into a `NavigationStackView` hierarchy.
+
+ Also, it can be created outside of a `NavigationStackView` hierarchy and injected manually into it during the `NavigationStackView` initialization process.
+*/
 public class NavigationStack: ObservableObject {
 
-    /// Default transition animation
+    /// The default easing function for push and pop transitions.
+    /// - Tag: defaultEasing
     public static let defaultEasing = Animation.easeOut(duration: 0.2)
 
     private(set) var navigationType = NavigationType.push
-
-    /// Customizable easing to apply in pop and push transitions
     private let easing: Animation
 
+    /// Creates a NavigationStack.
+    /// - Parameter easing: The easing function to apply to push and pop transitions. By default, the [default easing function](x-source-tag://defaultEasing) will be used.
     public init(easing: Animation = defaultEasing) {
         self.easing = easing
     }
