@@ -21,15 +21,17 @@ public enum NavigationTransition {
     /// A right-to-left slide transition on push, a left-to-right slide transition on pop.
     /// - Tag: defaultTransition
     public static var defaultTransitions: (push: AnyTransition, pop: AnyTransition) {
-        let pushTrans = AnyTransition.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading))
-        let popTrans = AnyTransition.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing))
+        let pushTrans = AnyTransition.asymmetric(insertion: .move(edge: .trailing),
+                                                 removal: .move(edge: .leading))
+        let popTrans = AnyTransition.asymmetric(insertion: .move(edge: .leading),
+                                                removal: .move(edge: .trailing))
         return (pushTrans, popTrans)
     }
 }
 
 /// An alternative SwiftUI NavigationView implementing classic stack-based navigation giving also some more control on animations and programmatic navigation.
 public struct NavigationStackView<Root>: View where Root: View {
-    @ObservedObject private var navViewModel: NavigationStack
+    @ObservedObject private var navigationStack: NavigationStack
     private let rootView: Root
     private let transitions: (push: AnyTransition, pop: AnyTransition)
 
@@ -38,8 +40,13 @@ public struct NavigationStackView<Root>: View where Root: View {
     ///   - transitionType: The type of transition to apply between views in every push and pop operation.
     ///   - easing: The easing function to apply to every push and pop operation.
     ///   - rootView: The very first view in the NavigationStack.
-    public init(transitionType: NavigationTransition = .default, easing: Animation = NavigationStack.defaultEasing, @ViewBuilder rootView: () -> Root) {
-        self.init(transitionType: transitionType, navigationStack: NavigationStack(easing: easing), rootView: rootView)
+    public init(transitionType: NavigationTransition = .default,
+                easing: Animation = NavigationStack.defaultEasing,
+                @ViewBuilder rootView: () -> Root) {
+
+        self.init(transitionType: transitionType,
+                  navigationStack: NavigationStack(easing: easing),
+                  rootView: rootView)
     }
 
     /// Creates a NavigationStackView with the provided NavigationStack
@@ -47,9 +54,12 @@ public struct NavigationStackView<Root>: View where Root: View {
     ///   - transitionType: The type of transition to apply between views in every push and pop operation.
     ///   - navigationStack: the shared NavigationStack
     ///   - rootView: The very first view in the NavigationStack.
-    public init(transitionType: NavigationTransition = .default, navigationStack: NavigationStack, @ViewBuilder rootView: () -> Root) {
+    public init(transitionType: NavigationTransition = .default,
+                navigationStack: NavigationStack,
+                @ViewBuilder rootView: () -> Root) {
+
         self.rootView = rootView()
-        self.navViewModel = navigationStack
+        self.navigationStack = navigationStack
         switch transitionType {
         case .none:
             self.transitions = (.identity, .identity)
@@ -61,19 +71,19 @@ public struct NavigationStackView<Root>: View where Root: View {
     }
 
     public var body: some View {
-        let showRoot = navViewModel.currentView == nil
-        let navigationType = navViewModel.navigationType
+        let showRoot = navigationStack.currentView == nil
+        let navigationType = navigationStack.navigationType
 
         return ZStack {
             Group {
                 if showRoot {
                     rootView
                         .transition(navigationType == .push ? transitions.push : transitions.pop)
-                        .environmentObject(navViewModel)
+                        .environmentObject(navigationStack)
                 } else {
-                    navViewModel.currentView!.wrappedElement
+                    navigationStack.currentView!.wrappedElement
                         .transition(navigationType == .push ? transitions.push : transitions.pop)
-                        .environmentObject(navViewModel)
+                        .environmentObject(navigationStack)
                 }
             }
         }
