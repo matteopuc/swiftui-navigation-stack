@@ -23,6 +23,7 @@ public class NavigationStack: ObservableObject {
     /// - Tag: defaultEasing
     public static let defaultEasing = Animation.easeOut(duration: 0.2)
 
+    @Published var currentView: ViewElement?
     private(set) var navigationType = NavigationType.push
     private let easing: Animation
 
@@ -38,7 +39,11 @@ public class NavigationStack: ObservableObject {
         }
     }
 
-    @Published var currentView: ViewElement?
+    /// The current depth of the navigation stack.
+    /// Root has depth = 0
+    public var depth: Int {
+        viewStack.depth
+    }
 
     /// Navigates to a view.
     /// - Parameters:
@@ -74,6 +79,10 @@ public class NavigationStack: ObservableObject {
 
         func peek() -> ViewElement? {
             views.last
+        }
+
+        var depth: Int {
+            views.count
         }
 
         mutating func push(_ element: ViewElement) {
