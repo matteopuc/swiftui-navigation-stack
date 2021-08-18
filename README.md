@@ -137,7 +137,7 @@ enum ViewDestinations {
 }
 
 struct MyHome: View {
-    @ObservedObject private var viewModel = ViewModel()
+    @ObservedObject var viewModel: ViewModel
     @State private var isSelected: ViewDestinations? = .noDestination
 
     var body: some View {
@@ -172,7 +172,7 @@ Inside the `NavigationStackView` you have access to the navigation stack as an `
 
 ```swift
 struct MyHome: View {
-    @ObservedObject private var viewModel = ViewModel()
+    @ObservedObject var viewModel: ViewModel
     @EnvironmentObject private var navigationStack: NavigationStack
 
     var body: some View {
@@ -196,7 +196,7 @@ It's not mandatory, but if you want to come back to a specific view at some poin
 ```swift
 struct MyHome: View {
     private static let childID = "childID"
-    @ObservedObject private var viewModel = ViewModel()
+    @ObservedObject var viewModel: ViewModel
     @EnvironmentObject private var navigationStack: NavigationStack
 
     var body: some View {
@@ -263,7 +263,7 @@ struct ChildView: View {
 
 ```swift
 struct ChildView: View {
-    @ObservedObject private var viewModel = ViewModel()
+    @ObservedObject var viewModel: ViewModel
     @EnvironmentObject private var navigationStack: NavigationStack
 
     var body: some View {
@@ -433,12 +433,7 @@ This time the transition animation involves the whole screen:
 
 ## Issues
 
-- SwiftUI resets all the properties of a view marked with `@State` every time the view is removed from a view hierarchy. For the `NavigationStackView` this is a problem because when I come back to a previous view (with a pop operation) I want all my view controls to be as I left them before (for example I want my `TextField`s to contain the text I previously typed in). It seems that the solution to this problem is using the `.id` modifier specifying an id for the views I don't want SwiftUI to reset. According to the Apple documentation the `.id` modifier:
-
-> Summary
-> Generates a uniquely identified view that can be inserted or removed.
-
-but again, it seems that this API is currently not working as expected (take a look at this interesting post: https://swiftui-lab.com/swiftui-id/). In order to workaround this problem, then, you have to use `@ObservableObject` when you need to make some state persist between push/pop operations. For example:
+- SwiftUI resets all the properties of a view marked with `@State` every time the view is removed from a view hierarchy. For the `NavigationStackView` this is a problem because when I come back to a previous view (with a pop operation) I want all my view controls to be as I left them before (for example I want my `TextField`s to contain the text I previously typed in). In order to workaround this problem you have to use `@ObservableObject` when you need to make some state persist between push/pop operations. For example:
 
 ```swift
 class ViewModel: ObservableObject {
@@ -446,7 +441,7 @@ class ViewModel: ObservableObject {
 }
 
 struct MyView: View {
-    @ObservedObject var viewModel = ViewModel()
+    @ObservedObject var viewModel: ViewModel
     
     var body: some View {
         VStack {
@@ -461,4 +456,4 @@ struct MyView: View {
 
 ### Other
 
-SwiftUI is really new, there are some bugs in the framework (or unexpected behaviours) and several API not yet documented. Please, report any issue may arise and feel free to suggest any improvement or changing to this first implementation of a navigation stack.
+SwiftUI is really new, there are some unexpected behaviours and several API not yet documented. Please, report any issue may arise and feel free to suggest any improvement or changing to this implementation of a navigation stack.
