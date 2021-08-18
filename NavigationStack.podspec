@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'NavigationStack'
-  s.version          = '1.0.2'
+  s.version          = '1.0.4'
   s.summary          = 'An alternative SwiftUI NavigationView.'
 
   s.description      = <<-DESC
