@@ -17,7 +17,7 @@ enum NavigationType {
 
  Also, it can be created outside of a `NavigationStackView` hierarchy and injected manually into it during the `NavigationStackView` initialization process.
 */
-public class NavigationStack: ObservableObject {
+public class NavigationStackCompat: ObservableObject {
 
     /// The default easing function for push and pop transitions.
     /// - Tag: defaultEasing

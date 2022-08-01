@@ -9,7 +9,7 @@ import SwiftUI
 
 /// A view used to navigate to another view through its enclosing NavigationStack.
 public struct PushView<Label, Destination, Tag>: View where Label: View, Destination: View, Tag: Hashable {
-    @EnvironmentObject private var navigationStack: NavigationStack
+    @EnvironmentObject private var navigationStack: NavigationStackCompat
     private let label: Label?
     private let destinationId: String?
     private let destination: Destination
