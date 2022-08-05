@@ -31,7 +31,7 @@ public enum NavigationTransition {
 
 /// An alternative SwiftUI NavigationView implementing classic stack-based navigation giving also some more control on animations and programmatic navigation.
 ///
-public struct NavigationStackCompat<Root>: View where Root: View {
+public struct NavigationStackView<Root>: View where Root: View {
     @ObservedObject private var navigationStack: NavigationStackCompat
     private let rootView: Root
     private let transitions: (push: AnyTransition, pop: AnyTransition)
