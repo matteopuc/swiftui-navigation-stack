@@ -19,9 +19,9 @@ public enum PopDestination {
     case view(withId: String)
 }
 
-/// A view used to navigate back to a previous view through its enclosing NavigationStack.
+/// A view used to navigate back to a previous view through its enclosing NavigationStackCompat.
 public struct PopView<Label, Tag>: View where Label: View, Tag: Hashable {
-    @EnvironmentObject private var navigationStack: NavigationStack
+    @EnvironmentObject private var navigationStack: NavigationStackCompat
     private let label: Label
     private let destination: PopDestination
     private let tag: Tag?

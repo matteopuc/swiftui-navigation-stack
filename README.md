@@ -173,7 +173,7 @@ Inside the `NavigationStackView` you have access to the navigation stack as an `
 ```swift
 struct MyHome: View {
     @ObservedObject var viewModel: ViewModel
-    @EnvironmentObject private var navigationStack: NavigationStack
+    @EnvironmentObject private var navigationStack: NavigationStackCompat
 
     var body: some View {
         Button(action: {
@@ -197,7 +197,7 @@ It's not mandatory, but if you want to come back to a specific view at some poin
 struct MyHome: View {
     private static let childID = "childID"
     @ObservedObject var viewModel: ViewModel
-    @EnvironmentObject private var navigationStack: NavigationStack
+    @EnvironmentObject private var navigationStack: NavigationStackCompat
 
     var body: some View {
         VStack {
@@ -264,7 +264,7 @@ struct ChildView: View {
 ```swift
 struct ChildView: View {
     @ObservedObject var viewModel: ViewModel
-    @EnvironmentObject private var navigationStack: NavigationStack
+    @EnvironmentObject private var navigationStack: NavigationStackCompat
 
     var body: some View {
         Button(action: {
@@ -280,15 +280,15 @@ struct ChildView: View {
 
 ## NavigationStack injection
 
-By default you can programmatically push and pop only inside the `NavigationStackView` hierarchy (by accessing the `NavigationStack` environment object). If you want to use the `NavigationStack` outside the `NavigationStackView` you need to create your own `NavigationStack` (wherever you want) **and pass it as a parameter to the `NavigationStackView`**. This is useful when you want to decouple your routing logic from views.
+By default you can programmatically push and pop only inside the `NavigationStackView` hierarchy (by accessing the `NavigationStackCompat` environment object). If you want to use the `NavigationStackCompat` outside the `NavigationStackView` you need to create your own `NavigationStackCompat` (wherever you want) **and pass it as a parameter to the `NavigationStackView`**. This is useful when you want to decouple your routing logic from views.
 
-**Important:** Every `NavigationStack` must be associated to a `NavigationStackView`. A `NavigationStack` cannot be shared between multiple `NavigationStackView`.
+**Important:** Every `NavigationStackCompat` must be associated to a `NavigationStackView`. A `NavigationStackCompat` cannot be shared between multiple `NavigationStackView`.
 
 For example:
 
 ```swift
 struct RootView: View {
-    let navigationStack: NavigationStack
+    let navigationStack: NavigationStackCompat
 
     var body: some View {
         NavigationStackView(navigationStack: navigationStack) {
@@ -298,9 +298,9 @@ struct RootView: View {
 }
 
 class MyRouter {
-    private let navStack: NavigationStack
+    private let navStack: NavigationStackCompat
 
-    init(navStack: NavigationStack) {
+    init(navStack: NavigationStackCompat) {
         self.navStack = navStack
     }
 

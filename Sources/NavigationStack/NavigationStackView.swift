@@ -30,8 +30,9 @@ public enum NavigationTransition {
 }
 
 /// An alternative SwiftUI NavigationView implementing classic stack-based navigation giving also some more control on animations and programmatic navigation.
+///
 public struct NavigationStackView<Root>: View where Root: View {
-    @ObservedObject private var navigationStack: NavigationStack
+    @ObservedObject private var navigationStack: NavigationStackCompat
     private let rootView: Root
     private let transitions: (push: AnyTransition, pop: AnyTransition)
 
@@ -41,21 +42,21 @@ public struct NavigationStackView<Root>: View where Root: View {
     ///   - easing: The easing function to apply to every push and pop operation.
     ///   - rootView: The very first view in the NavigationStack.
     public init(transitionType: NavigationTransition = .default,
-                easing: Animation = NavigationStack.defaultEasing,
+                easing: Animation = NavigationStackCompat.defaultEasing,
                 @ViewBuilder rootView: () -> Root) {
 
         self.init(transitionType: transitionType,
-                  navigationStack: NavigationStack(easing: easing),
+                  navigationStack: NavigationStackCompat(easing: easing),
                   rootView: rootView)
     }
 
-    /// Creates a NavigationStackView with the provided NavigationStack
+    /// Creates a NavigationStackView with the provided NavigationStackCompat.
     /// - Parameters:
     ///   - transitionType: The type of transition to apply between views in every push and pop operation.
-    ///   - navigationStack: the shared NavigationStack
+    ///   - navigationStack: the shared NavigationStackCompat.
     ///   - rootView: The very first view in the NavigationStack.
     public init(transitionType: NavigationTransition = .default,
-                navigationStack: NavigationStack,
+                navigationStack: NavigationStackCompat,
                 @ViewBuilder rootView: () -> Root) {
 
         self.rootView = rootView()

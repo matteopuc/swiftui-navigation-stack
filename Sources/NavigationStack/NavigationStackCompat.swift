@@ -1,5 +1,5 @@
 //
-//  NavigationStack.swift
+//  NavigationStackCompat.swift
 //
 //  Created by Matteo Puccinelli on 28/11/2019.
 
@@ -13,11 +13,11 @@ enum NavigationType {
 
 /** The manager behind the `NavigationStackView`. It also enables programmatic navigation.
 
- A `NavigationStack` is automatically injected as an `@EnvironmentObject` into a `NavigationStackView` hierarchy.
+ A `NavigationStackCompat` is automatically injected as an `@EnvironmentObject` into a `NavigationStackView` hierarchy.
 
  Also, it can be created outside of a `NavigationStackView` hierarchy and injected manually into it during the `NavigationStackView` initialization process.
 */
-public class NavigationStack: ObservableObject {
+public class NavigationStackCompat: ObservableObject {
 
     /// The default easing function for push and pop transitions.
     /// - Tag: defaultEasing
@@ -27,7 +27,7 @@ public class NavigationStack: ObservableObject {
     private(set) var navigationType = NavigationType.push
     private let easing: Animation
 
-    /// Creates a NavigationStack.
+    /// Creates a NavigationStackCompat.
     /// - Parameter easing: The easing function to apply to push and pop transitions. By default, the [default easing function](x-source-tag://defaultEasing) will be used.
     public init(easing: Animation = defaultEasing) {
         self.easing = easing
@@ -43,6 +43,13 @@ public class NavigationStack: ObservableObject {
     /// Root has depth = 0
     public var depth: Int {
         viewStack.depth
+    }
+
+    /// Returns a Boolean value indicating whether the stack contains a view with the specified ID.
+    /// - Parameter id: The ID of the view to look for.
+    /// - Returns: **true**  if the stack contains a view with the specified ID; otherwise, **false**.
+    public func containsView(withId id: String) -> Bool {
+        viewStack.indexForView(withId: id) != nil
     }
 
     /// Navigates to a view.
@@ -72,52 +79,50 @@ public class NavigationStack: ObservableObject {
             }
         }
     }
+}
 
-    //the actual stack
-    private struct ViewStack {
-        private var views = [ViewElement]()
+private struct ViewStack {
+    private var views = [ViewElement]()
 
-        func peek() -> ViewElement? {
-            views.last
+    func peek() -> ViewElement? {
+        views.last
+    }
+
+    var depth: Int {
+        views.count
+    }
+
+    mutating func push(_ element: ViewElement) {
+        guard indexForView(withId: element.id) == nil else {
+            print("Duplicated view identifier: \"\(element.id)\". You are trying to push a view with an identifier that already exists on the navigation stack.")
+            return
         }
+        views.append(element)
+    }
 
-        var depth: Int {
-            views.count
+    mutating func popToPrevious() {
+        _ = views.popLast()
+    }
+
+    mutating func popToView(withId identifier: String) {
+        guard let viewIndex = indexForView(withId: identifier) else {
+            print("Identifier \"\(identifier)\" not found. You are trying to pop to a view that doesn't exist.")
+            return
         }
+        views.removeLast(views.count - (viewIndex + 1))
+    }
 
-        mutating func push(_ element: ViewElement) {
-            guard indexForView(withId: element.id) == nil else {
-                print("Duplicated view identifier: \"\(element.id)\". You are trying to push a view with an identifier that already exists on the navigation stack.")
-                return
-            }
-            views.append(element)
-        }
+    mutating func popToRoot() {
+        views.removeAll()
+    }
 
-        mutating func popToPrevious() {
-            _ = views.popLast()
-        }
-
-        mutating func popToView(withId identifier: String) {
-            guard let viewIndex = indexForView(withId: identifier) else {
-                print("Identifier \"\(identifier)\" not found. You are trying to pop to a view that doesn't exist.")
-                return
-            }
-            views.removeLast(views.count - (viewIndex + 1))
-        }
-
-        mutating func popToRoot() {
-            views.removeAll()
-        }
-
-        private func indexForView(withId identifier: String) -> Int? {
-            views.firstIndex {
-                $0.id == identifier
-            }
+    func indexForView(withId identifier: String) -> Int? {
+        views.firstIndex {
+            $0.id == identifier
         }
     }
 }
 
-//the actual element in the stack
 struct ViewElement: Identifiable, Equatable {
     let id: String
     let wrappedElement: AnyView
