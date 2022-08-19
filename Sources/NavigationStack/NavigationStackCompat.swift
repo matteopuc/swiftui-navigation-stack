@@ -1,5 +1,5 @@
 //
-//  NavigationStack.swift
+//  NavigationStackCompat.swift
 //
 //  Created by Matteo Puccinelli on 28/11/2019.
 
@@ -13,7 +13,7 @@ enum NavigationType {
 
 /** The manager behind the `NavigationStackView`. It also enables programmatic navigation.
 
- A `NavigationStack` is automatically injected as an `@EnvironmentObject` into a `NavigationStackView` hierarchy.
+ A `NavigationStackCompat` is automatically injected as an `@EnvironmentObject` into a `NavigationStackView` hierarchy.
 
  Also, it can be created outside of a `NavigationStackView` hierarchy and injected manually into it during the `NavigationStackView` initialization process.
 */
@@ -27,7 +27,7 @@ public class NavigationStackCompat: ObservableObject {
     private(set) var navigationType = NavigationType.push
     private let easing: Animation
 
-    /// Creates a NavigationStack.
+    /// Creates a NavigationStackCompat.
     /// - Parameter easing: The easing function to apply to push and pop transitions. By default, the [default easing function](x-source-tag://defaultEasing) will be used.
     public init(easing: Animation = defaultEasing) {
         self.easing = easing

@@ -50,10 +50,10 @@ public struct NavigationStackView<Root>: View where Root: View {
                   rootView: rootView)
     }
 
-    /// Creates a NavigationStackView with the provided NavigationStack
+    /// Creates a NavigationStackView with the provided NavigationStackCompat.
     /// - Parameters:
     ///   - transitionType: The type of transition to apply between views in every push and pop operation.
-    ///   - navigationStack: the shared NavigationStack
+    ///   - navigationStack: the shared NavigationStackCompat.
     ///   - rootView: The very first view in the NavigationStack.
     public init(transitionType: NavigationTransition = .default,
                 navigationStack: NavigationStackCompat,

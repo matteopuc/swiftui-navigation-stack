@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// A view used to navigate to another view through its enclosing NavigationStack.
+/// A view used to navigate to another view through its enclosing NavigationStackCompat.
 public struct PushView<Label, Destination, Tag>: View where Label: View, Destination: View, Tag: Hashable {
     @EnvironmentObject private var navigationStack: NavigationStackCompat
     private let label: Label?
