@@ -24,7 +24,7 @@ public class NavigationStackCompat: ObservableObject {
     public static let defaultEasing = Animation.easeOut(duration: 0.2)
 
     @Published var currentView: ViewElement?
-    private(set) var navigationType = NavigationType.push
+    @Published private(set) var navigationType = NavigationType.push
     private let easing: Animation
 
     /// Creates a NavigationStackCompat.
@@ -57,8 +57,8 @@ public class NavigationStackCompat: ObservableObject {
     ///   - element: The destination view.
     ///   - identifier: The ID of the destination view (used to easily come back to it if needed).
     public func push<Element: View>(_ element: Element, withId identifier: String? = nil) {
+        navigationType = .push
         withAnimation(easing) {
-            navigationType = .push
             viewStack.push(ViewElement(id: identifier == nil ? UUID().uuidString : identifier!,
                                        wrappedElement: AnyView(element)))
         }
@@ -67,8 +67,8 @@ public class NavigationStackCompat: ObservableObject {
     /// Navigates back to a previous view.
     /// - Parameter to: The destination type of the transition operation.
     public func pop(to: PopDestination = .previous) {
+        navigationType = .pop
         withAnimation(easing) {
-            navigationType = .pop
             switch to {
             case .root:
                 viewStack.popToRoot()
