@@ -1,5 +1,8 @@
 # swiftui-navigation-stack Changelog
 
+## 1.0.6
+- Fixed a bug that caused a wrong transition animation on iOS 16.
+
 ## 1.0.5
 - Renamed `NavigationStack` to `NavigationStackCompat` to avoid conflicts with the iOS 16 `NavigationStack` by Apple.
 - You can now check whether the NavigationStackCompat already contains a specific view.
